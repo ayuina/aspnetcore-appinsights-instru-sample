@@ -1,4 +1,6 @@
 
+using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Azure;
 
 namespace WebApi2
@@ -17,6 +19,8 @@ namespace WebApi2
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddApplicationInsightsTelemetry();
+            builder.Services.AddSingleton<ITelemetryInitializer, MyTelemetryInitializer>();
+
             builder.Services.AddHttpClient();
             builder.Services.AddAzureClients(acfbuilder =>
             {
@@ -42,4 +46,13 @@ namespace WebApi2
             app.Run();
         }
     }
+
+    public class MyTelemetryInitializer : ITelemetryInitializer
+    {
+        public void Initialize(ITelemetry telemetry)
+        {
+            telemetry.Context.Cloud.RoleName = typeof(Program).Namespace;
+        }
+    }
+
 }
