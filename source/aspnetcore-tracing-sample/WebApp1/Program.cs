@@ -10,6 +10,7 @@ namespace WebApp1
             builder.Services.AddRazorPages();
 
             builder.Services.AddApplicationInsightsTelemetry();
+            builder.Services.AddHttpClient();
 
             var app = builder.Build();
 
