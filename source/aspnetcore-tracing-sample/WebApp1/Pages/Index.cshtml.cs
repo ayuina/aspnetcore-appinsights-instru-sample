@@ -19,36 +19,9 @@ namespace WebApp1.Pages
 
         public async Task OnGet()
         {
-            //await CallHttpBin_RequestHeaderInspection();
             await CallBackendApi();
         }
 
-        private async Task CallHttpBin_RequestHeaderInspection()
-        {
-            _logger.LogInformation("method start: {method}", nameof(CallHttpBin_RequestHeaderInspection));
-
-            var client = _httpClientFactory.CreateClient();
-            client.BaseAddress = new Uri("https://httpbin.org");
-            var res = await client.GetAsync("/headers");
-
-            if (!res.IsSuccessStatusCode)
-            {
-                _logger.LogWarning("error from httpbin: status = {status}, reason = {readon} ", res.StatusCode, res.ReasonPhrase);
-                return;
-            }
-
-            var resjson = await res.Content.ReadFromJsonAsync<RequestHeaderInspectionResponse>();
-            var tracedata = resjson!.headers
-                .Select(kvp => $"{kvp.Key}: {kvp.Value}")
-                .Aggregate((x, y) => $"{x}{Environment.NewLine}{y}");
-            _logger.LogInformation("request header inspection: {requestheaders}", tracedata);
-
-        }
-
-        public class RequestHeaderInspectionResponse
-        {
-            public Dictionary<string, string> headers { get; set; }
-        }
 
         private async Task CallBackendApi()
         {

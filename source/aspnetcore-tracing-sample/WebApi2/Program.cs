@@ -1,4 +1,6 @@
 
+using Microsoft.Extensions.Azure;
+
 namespace WebApi2
 {
     public class Program
@@ -15,6 +17,12 @@ namespace WebApi2
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddApplicationInsightsTelemetry();
+            builder.Services.AddHttpClient();
+            builder.Services.AddAzureClients(acfbuilder =>
+            {
+                var strconstr = builder.Configuration["STORAGE_CONNECTION_STRING"]!.ToString();
+                acfbuilder.AddBlobServiceClient(strconstr);
+            });
 
 
             var app = builder.Build();
