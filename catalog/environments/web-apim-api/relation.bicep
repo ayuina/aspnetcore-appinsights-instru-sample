@@ -42,6 +42,8 @@ module webfrontSettings 'appsettings.bicep' = {
     currentAppSettings: webfrontRef::appsettings.properties
     appSettings: {
       APPLICATIONINSIGHTS_CONNECTION_STRING: appInsightsConnectoinString
+      'Logging:ApplicationInsights:LogLevel:Default': 'Information'
+      'Logging:ApplicationInsights:LogLevel:Microsoft.AspNetCore': 'Information'
       BACKEND_API_ENDPOINT: apimanRef.properties.gatewayUrl
       BACKEND_API_KEY: listSecrets(apimanRef::frontSubsc.id, '2023-09-01-preview').primaryKey
       BACKEND_API_AUTH_HEADER_NAME: 'Ocp-Apim-Subscription-Key'
@@ -67,6 +69,8 @@ module apibackendSettings 'appsettings.bicep' = {
     currentAppSettings: apibackendRef::appsettings.properties
     appSettings: {
       APPLICATIONINSIGHTS_CONNECTION_STRING: appInsightsConnectoinString
+      'Logging:ApplicationInsights:LogLevel:Default': 'Information'
+      'Logging:ApplicationInsights:LogLevel:Microsoft.AspNetCore': 'Information'
     }
   }
 }
