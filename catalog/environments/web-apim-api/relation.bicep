@@ -22,12 +22,16 @@ resource apibackendRef 'Microsoft.Web/sites@2022-03-01' existing = {
 resource apimanRef 'Microsoft.ApiManagement/service@2023-09-01-preview' existing = {
   name: apimName
 
-  resource master 'subscriptions' existing = {
-    name: 'master'
-  }
+  // resource master 'subscriptions' existing = {
+  //   name: 'master'
+  // }
 
-  resource api 'apis' existing = {
-    name: 'test'
+  resource frontSubsc 'subscriptions' = {
+    name: 'frontSubsc'
+    properties: {
+      displayName: 'subscription for web front'
+      scope: '${apimanRef.id}/apis'
+    }
   }
 }  
 
@@ -39,7 +43,7 @@ module webfrontSettings 'appsettings.bicep' = {
     appSettings: {
       APPLICATIONINSIGHTS_CONNECTION_STRING: appInsightsConnectoinString
       BACKEND_API_ENDPOINT: apimanRef.properties.gatewayUrl
-      BACKEND_API_KEY: listSecrets(apimanRef::master.id, '2023-09-01-preview').primaryKey
+      BACKEND_API_KEY: listSecrets(apimanRef::frontSubsc.id, '2023-09-01-preview').primaryKey
       BACKEND_API_AUTH_HEADER_NAME: 'Ocp-Apim-Subscription-Key'
     }
   }
@@ -59,8 +63,8 @@ resource apimbackends 'Microsoft.ApiManagement/service/backends@2023-09-01-previ
 module apibackendSettings 'appsettings.bicep' = {
   name: 'apibackendSettings'
   params: {
-    appsvcName: webfrontName
-    currentAppSettings: webfrontRef::appsettings.properties
+    appsvcName: apibackendName
+    currentAppSettings: apibackendRef::appsettings.properties
     appSettings: {
       APPLICATIONINSIGHTS_CONNECTION_STRING: appInsightsConnectoinString
     }

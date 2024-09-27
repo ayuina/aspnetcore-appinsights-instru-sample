@@ -1,5 +1,5 @@
 name: aspnet-appins-dtrace
-version: 1.1.0
+version: 1.1.1
 summary: Deploy 2 app service, 1 api management, 1 application insights
 description: Each services (app services and api management) configured to send telemetry to application insights for distributed tracing.
 runner: ARM
