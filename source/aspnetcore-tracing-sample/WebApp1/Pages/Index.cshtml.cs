@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -8,18 +9,20 @@ namespace WebApp1.Pages
         private readonly ILogger _logger;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly BlobServiceClient _blobServiceClient;
 
-        public IndexModel(ILogger<IndexModel> logger, IConfiguration config, IHttpClientFactory httpClientFactory)
+        public IndexModel(ILogger<IndexModel> logger, IConfiguration config, IHttpClientFactory httpClientFactory, BlobServiceClient blobServiceClient)
         {
             _logger = logger;
             _config = config;
             _httpClientFactory = httpClientFactory;
-
+            _blobServiceClient = blobServiceClient;
         }
 
         public async Task OnGet()
         {
             await CallBackendApi();
+            await CallStorageServiceAsync();
         }
 
 
@@ -62,6 +65,19 @@ namespace WebApp1.Pages
             public string summary { get; set; }
         }
 
+        private async Task CallStorageServiceAsync()
+        {
+            _logger.LogInformation("method start: {method}", nameof(CallStorageServiceAsync));
+
+            var containers = _blobServiceClient.GetBlobContainersAsync().AsPages();
+            await foreach (var page in containers)
+            {
+                foreach (var container in page.Values)
+                {
+                    _logger.LogInformation("container {container} is found", container.Name);
+                }
+            }
+        }
 
     }
 }

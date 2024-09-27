@@ -21,6 +21,7 @@ namespace WebApp1
             {
                 var strconstr = builder.Configuration["STORAGE_CONNECTION_STRING"]!.ToString();
                 acfbuilder.AddBlobServiceClient(strconstr);
+                acfbuilder.AddQueueServiceClient(strconstr);
             });
 
             var app = builder.Build();

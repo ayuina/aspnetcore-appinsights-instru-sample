@@ -2,6 +2,7 @@ param webfrontName string
 param apibackendName string
 param apimName string
 param appInsightsConnectoinString string
+param storageAccountName string
 
 resource webfrontRef 'Microsoft.Web/sites@2022-03-01' existing = {
   name: webfrontName
@@ -22,10 +23,6 @@ resource apibackendRef 'Microsoft.Web/sites@2022-03-01' existing = {
 resource apimanRef 'Microsoft.ApiManagement/service@2023-09-01-preview' existing = {
   name: apimName
 
-  // resource master 'subscriptions' existing = {
-  //   name: 'master'
-  // }
-
   resource frontSubsc 'subscriptions' = {
     name: 'frontSubsc'
     properties: {
@@ -34,6 +31,11 @@ resource apimanRef 'Microsoft.ApiManagement/service@2023-09-01-preview' existing
     }
   }
 }  
+
+resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
+  name: storageAccountName
+}
+
 
 module webfrontSettings 'appsettings.bicep' = {
   name: 'webfrontSettings'
@@ -45,8 +47,10 @@ module webfrontSettings 'appsettings.bicep' = {
       'Logging:ApplicationInsights:LogLevel:Default': 'Information'
       'Logging:ApplicationInsights:LogLevel:Microsoft.AspNetCore': 'Information'
       BACKEND_API_ENDPOINT: apimanRef.properties.gatewayUrl
-      BACKEND_API_KEY: listSecrets(apimanRef::frontSubsc.id, '2023-09-01-preview').primaryKey
+      //BACKEND_API_KEY: listSecrets(apimanRef::frontSubsc.id, '2023-09-01-preview').primaryKey
+      BACKEND_API_KEY: apimanRef::frontSubsc.listSecrets().primaryKey
       BACKEND_API_AUTH_HEADER_NAME: 'Ocp-Apim-Subscription-Key'
+      STORAGE_CONNECTION_STRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storage.listKeys().keys[0].value}'
     }
   }
 }
@@ -71,6 +75,7 @@ module apibackendSettings 'appsettings.bicep' = {
       APPLICATIONINSIGHTS_CONNECTION_STRING: appInsightsConnectoinString
       'Logging:ApplicationInsights:LogLevel:Default': 'Information'
       'Logging:ApplicationInsights:LogLevel:Microsoft.AspNetCore': 'Information'
+      STORAGE_CONNECTION_STRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storage.listKeys().keys[0].value}'
     }
   }
 }

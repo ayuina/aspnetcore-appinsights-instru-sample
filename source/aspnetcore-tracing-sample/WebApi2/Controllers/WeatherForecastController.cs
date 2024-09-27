@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 
@@ -14,11 +15,13 @@ namespace WebApi2.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly BlobServiceClient _blobServiceClient;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IHttpClientFactory httpClientFactory)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IHttpClientFactory httpClientFactory, BlobServiceClient blobServiceClient)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _blobServiceClient = blobServiceClient;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
@@ -27,6 +30,7 @@ namespace WebApi2.Controllers
             _logger.LogInformation("API: GetWeatherForecast");
 
             await CallHttpBin_RequestHeaderInspection();
+            await CallStorageServiceAsync();
 
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
@@ -62,6 +66,20 @@ namespace WebApi2.Controllers
         public class RequestHeaderInspectionResponse
         {
             public Dictionary<string, string> headers { get; set; }
+        }
+
+        private async Task CallStorageServiceAsync()
+        {
+            _logger.LogInformation("method start: {method}", nameof(CallStorageServiceAsync));
+
+            var containers = _blobServiceClient.GetBlobContainersAsync().AsPages();
+            await foreach (var page in containers)
+            {
+                foreach (var container in page.Values)
+                {
+                    _logger.LogInformation("container {container} is found", container.Name);
+                }
+            }
         }
 
     }
