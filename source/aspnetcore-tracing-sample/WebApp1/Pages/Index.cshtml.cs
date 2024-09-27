@@ -34,7 +34,8 @@ namespace WebApp1.Pages
             var key = _config["BACKEND_API_KEY"];
             var header = _config["BACKEND_API_AUTH_HEADER_NAME"];
 
-            var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
+            var urlbuilder = new UriBuilder(endpoint) { Path = "/weatherforecast" };
+            var request = new HttpRequestMessage(HttpMethod.Get, urlbuilder.Uri);
             if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(header))
             {
                 request.Headers.Add(header, key);

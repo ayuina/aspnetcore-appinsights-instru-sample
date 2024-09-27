@@ -18,14 +18,12 @@ resource web 'Microsoft.Web/sites@2022-09-01' = {
   properties:{
     serverFarmId: asp.id
     clientAffinityEnabled: false
+    httpsOnly: true
     siteConfig: {
       netFrameworkVersion: 'v8.0'
       ftpsState: 'Disabled'
       use32BitWorkerProcess: false
     }
-  }
-  tags: {
-    amamonitor: 'target'
   }
 }
 
