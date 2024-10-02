@@ -15,4 +15,8 @@
 	  <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+
 </Project>
