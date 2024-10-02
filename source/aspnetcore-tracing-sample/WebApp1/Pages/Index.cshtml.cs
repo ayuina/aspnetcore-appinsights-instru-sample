@@ -47,7 +47,7 @@ namespace WebApp1.Pages
             if(!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning("error from backend api: status = {status}, reason = {reason}", response.StatusCode, response.ReasonPhrase);
-                return;
+                throw new ApplicationException("cannot access backendapi");
             }
 
             var data = await response.Content.ReadFromJsonAsync<IEnumerable<WeatherInfo>>();

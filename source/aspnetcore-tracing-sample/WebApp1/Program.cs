@@ -15,6 +15,8 @@ namespace WebApp1
 
             builder.Services.AddApplicationInsightsTelemetry();
             builder.Services.AddSingleton<ITelemetryInitializer, MyTelemetryInitializer>();
+            builder.Services.AddServiceProfiler();
+            builder.Services.AddSnapshotCollector();
 
             builder.Services.AddHttpClient();
             builder.Services.AddAzureClients(acfbuilder =>
